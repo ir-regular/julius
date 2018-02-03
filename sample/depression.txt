@@ -1,0 +1,37 @@
+People with depression use language differently – here’s how to spot it
+
+From the way you move and sleep, to how you interact with people around you, depression changes just about everything. It is even noticeable in the way you speak and express yourself in writing. Sometimes this “language of depression” can have a powerful effect on others. Just consider the impact of the poetry and song lyrics of Sylvia Plath and Kurt Cobain, who both killed themselves after suffering from depression.
+
+Scientists have long tried to pin down the exact relationship between depression and language, and technology is helping us get closer to a full picture. Our new study, published in Clinical Psychological Science, has now unveiled a class of words that can help accurately predict whether someone is suffering from depression.
+
+Traditionally, linguistic analyses in this field have been carried out by researchers reading and taking notes. Nowadays, computerised text analysis methods allow the processing of extremely large data banks in minutes. This can help spot linguistic features which humans may miss, calculating the percentage prevalence of words and classes of words, lexical diversity, average sentence length, grammatical patterns and many other metrics.
+
+So far, personal essays and diary entries by depressed people have been useful, as has the work of well-known artists such as Cobain and Plath. For the spoken word, snippets of natural language of people with depression have also provided insight. Taken together, the findings from such research reveal clear and consistent differences in language between those with and without symptoms of depression.
+
+Content
+
+Language can be separated into two components: content and style. The content relates to what we express – that is, the meaning or subject matter of statements. It will surprise no one to learn that those with symptoms of depression use an excessive amount of words conveying negative emotions, specifically negative adjectives and adverbs – such as “lonely”, “sad” or “miserable”.
+
+More interesting is the use of pronouns. Those with symptoms of depression use significantly more first person singular pronouns – such as “me”, “myself” and “I” – and significantly fewer second and third person pronouns – such as “they”, “them” or “she”. This pattern of pronoun use suggests people with depression are more focused on themselves, and less connected with others. Researchers have reported that pronouns are actually more reliable in identifying depression than negative emotion words.
+
+We know that rumination (dwelling on personal problems) and social isolation are common features of depression. However, we don’t know whether these findings reflect differences in attention or thinking style. Does depression cause people to focus on themselves, or do people who focus on themselves get symptoms of depression?
+
+Style
+
+The style of language relates to how we express ourselves, rather than the content we express. Our lab recently conducted a big data text analysis of 64 different online mental health forums, examining over 6,400 members. “Absolutist words” – which convey absolute magnitudes or probabilities, such as “always”, “nothing” or “completely” – were found to be better markers for mental health forums than either pronouns or negative emotion words.
+
+From the outset, we predicted that those with depression will have a more black and white view of the world, and that this would manifest in their style of language. Compared to 19 different control forums (for example, Mumsnet and StudentRoom), the prevalence of absolutist words is approximately 50% greater in anxiety and depression forums, and approximately 80% greater for suicidal ideation forums.
+
+Pronouns produced a similar distributional pattern as absolutist words across the forums, but the effect was smaller. By contrast, negative emotion words were paradoxically less prevalent in suicidal ideation forums than in anxiety and depression forums.
+
+Our research also included recovery forums, where members who feel they have recovered from a depressive episode write positive and encouraging posts about their recovery. Here we found that negative emotion words were used at comparable levels to control forums, while positive emotion words were elevated by approximately 70%. Nevertheless, the prevalence of absolutist words remained significantly greater than that of controls, but slightly lower than in anxiety and depression forums.
+
+Crucially, those who have previously had depressive symptoms are more likely to have them again. Therefore, their greater tendency for absolutist thinking, even when there are currently no symptoms of depression, is a sign that it may play a role in causing depressive episodes. The same effect is seen in use of pronouns, but not for negative emotion words.
+
+Practical implications
+
+Understanding the language of depression can help us understand the way those with symptoms of depression think, but it also has practical implications. Researchers are combining automated text analysis with machine learning (computers that can learn from experience without being programmed) to classify a variety of mental health conditions from natural language text samples such as blog posts.
+
+Such classification is already outperforming that made by trained therapists. Importantly, machine learning classification will only improve as more data is provided and more sophisticated algorithms are developed. This goes beyond looking at the broad patterns of absolutism, negativity and pronouns already discussed. Work has begun on using computers to accurately identify increasingly specific subcategories of mental health problems – such as perfectionism, self-esteem problems and social anxiety.
+
+That said, it is of course possible to use a language associated with depression without actually being depressed. Ultimately, it is how you feel over time that determines whether you are suffering. But as the World Health Organisation estimates that more than 300m people worldwide are now living with depression, an increase of more than 18% since 2005, having more tools available to spot the condition is certainly important to improve health and prevent tragic suicides such as those of Plath and Cobain.
