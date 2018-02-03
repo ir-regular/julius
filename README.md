@@ -9,13 +9,13 @@ you at a specified rate.
 
 **Julius is currently a Mac-only utility.**
 
-`julius.py -w wordlist.csv -p 500`
+`python julius.py -p 1000 -f sample/phrases.csv`
 
-### Flags
+### Command syntax
 
-`-w` the location of a wordlist file, with a phrase per line
+`-f` required: the location of a phrase list file, with a phrase per line
 
-`-p` the length of pauses between phrases, in milliseconds
+`-p` optional: the length of pauses between phrases, in milliseconds (default 1000)
 
 ## Rationale
 
