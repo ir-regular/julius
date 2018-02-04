@@ -9,6 +9,10 @@ class Srs:
     stats = {}
     field_names = ['file', 'success_count', 'due_date']
 
+    # SRS programs often adjust intervals based on user performance / ease of recall,
+    # but since I don't want to pause after every phrase, in Julius they will always stay the same.
+    srs_intervals = [1, 2, 4, 7, 11, 14, 21, 35, 70, 105]
+
     def __init__(self, directory):
         if not os.path.isdir(directory):
             raise ValueError('Cannot save SRS stats to path {0} as it is not a directory'.format(directory))
@@ -37,6 +41,11 @@ class Srs:
     def default_stat(file):
         """Return a default file stat row"""
         return {'file': file, 'success_count': 0, 'due_date': datetime.date.today().isoformat()}
+
+    @staticmethod
+    def next_date_due(prev_date_due, success_count):
+        """Return the next date the file is due to be repeated"""
+        return prev_date_due + datetime.timedelta(days=Srs.srs_intervals[success_count])
 
     def read_stats(self, files):
         """Load stats for specified files from the stats file"""
