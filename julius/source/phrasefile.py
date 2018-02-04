@@ -1,6 +1,7 @@
 import csv
 import random
 
+
 def read_phrases(filename):
     phrases = []
 

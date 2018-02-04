@@ -3,7 +3,8 @@ import argparse
 from julius.source.phrasefile import read_phrases
 from julius.voice.say import insert_pauses, dictate
 
-def adhoc(location, pause):
+
+def adhoc_handler(location, pause):
     if os.path.isfile(location):
         phrases = read_phrases(location)
         phrases = insert_pauses(phrases, pause)
@@ -17,8 +18,10 @@ def adhoc(location, pause):
     except KeyboardInterrupt:
         exit(0)
 
-def srs(location, pause):
+
+def srs_handler(location, pause):
     raise NotImplementedError('srs not yet implemented')
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -30,9 +33,9 @@ def main():
     args = parser.parse_args()
 
     if args.mode == 'adhoc':
-        adhoc(args.location, args.pause)
+        adhoc_handler(args.location, args.pause)
     else:
-        srs(args.location, args.pause)
+        srs_handler(args.location, args.pause)
 
 if __name__ == "__main__":
     main()
