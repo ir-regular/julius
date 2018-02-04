@@ -2,6 +2,7 @@ import os.path
 import argparse
 from julius.source.phrasefile import read_phrases
 from julius.voice.say import insert_pauses, dictate
+from julius.source.srs import Srs
 
 
 def adhoc_handler(location, pause):
@@ -20,7 +21,13 @@ def adhoc_handler(location, pause):
 
 
 def srs_handler(location, pause):
-    raise NotImplementedError('srs not yet implemented')
+    srs = Srs(location)
+    try:
+        raise NotImplementedError('Srs not fully implemented - stats saved')
+    except KeyboardInterrupt:
+        exit(0)
+    finally:
+        srs.save_stats()
 
 
 def main():
