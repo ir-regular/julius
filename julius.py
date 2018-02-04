@@ -22,12 +22,17 @@ def adhoc_handler(location, pause):
 
 def srs_handler(location, pause):
     srs = Srs(location)
-    try:
-        raise NotImplementedError('Srs not fully implemented - stats saved')
-    except KeyboardInterrupt:
-        exit(0)
-    finally:
-        srs.save_stats()
+    for file in srs.get_files_due():
+        phrases = read_phrases(os.path.join(location, file))
+        phrases = insert_pauses(phrases, pause)
+
+        try:
+            dictate(phrases)
+            # todo: ask the user for success / failure
+        except KeyboardInterrupt:
+            exit(0)
+        finally:
+            srs.save_stats()
 
 
 def main():
