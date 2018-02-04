@@ -3,6 +3,23 @@ import argparse
 from julius.source.phrasefile import read_phrases
 from julius.voice.say import insert_pauses, dictate
 
+def adhoc(location, pause):
+    if os.path.isfile(location):
+        phrases = read_phrases(location)
+        phrases = insert_pauses(phrases, pause)
+    elif os.path.isdir(location):
+        raise NotImplementedError('adhoc mode for directories not yet implemented')
+    else:
+        raise ValueError('Location must be a valid file or directory')
+
+    try:
+        dictate(phrases)
+    except KeyboardInterrupt:
+        exit(0)
+
+def srs(location, pause):
+    raise NotImplementedError('srs not yet implemented')
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('mode', choices=['adhoc', 'srs'], help='adhoc practice or spaced repetition system')
@@ -13,21 +30,9 @@ def main():
     args = parser.parse_args()
 
     if args.mode == 'adhoc':
-        if os.path.isfile(args.location):
-            phrases = read_phrases(args.location)
-            phrases = insert_pauses(phrases, args.pause)
-        elif os.path.isdir(args.location):
-            raise NotImplementedError('adhoc mode for directories not yet implemented')
-        else:
-            raise ValueError('Location must be a valid file or directory')
+        adhoc(args.location, args.pause)
     else:
-        # args.mode == 'srs' because otherwise argparse would have errored out
-        raise NotImplementedError('srs not yet implemented')
-
-    try:
-        dictate(phrases)
-    except KeyboardInterrupt:
-        exit(0)
+        srs(args.location, args.pause)
 
 if __name__ == "__main__":
     main()
