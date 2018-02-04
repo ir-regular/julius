@@ -40,7 +40,7 @@ class Srs:
     @staticmethod
     def default_stat(file):
         """Return a default file stat row"""
-        return {'file': file, 'success_count': 0, 'due_date': datetime.date.today().isoformat()}
+        return {'file': file, 'success_count': '0', 'due_date': datetime.date.today().isoformat()}
 
     @staticmethod
     def next_date_due(prev_date_due, success_count):
@@ -58,6 +58,20 @@ class Srs:
         # todo: order the files
         # Potential orders to test: by success count, by due date (both asc and desc)
         return [f for f, stat in self.stats.items() if self.parse_iso_date(stat['due_date']) <= today]
+
+    def file_processed(self, file):
+        """Mark file as successfully processed: increase success count and calculate next due date"""
+        count = int(self.stats[file]['success_count'])
+        due_date = self.parse_iso_date(self.stats[file]['due_date'])
+
+        self.stats[file]['due_date'] = self.next_date_due(due_date, count)
+        self.stats[file]['success_count'] = str(count + 1)
+
+    def file_failed(self, file):
+        """Mark the file as unsuccessfully processed: reset to the shortest interval (due tomorrow)"""
+        today = datetime.date.today()
+        self.stats[file]['due_date'] = (today + datetime.timedelta(days=1)).isoformat()
+        self.stats[file]['success_count'] = '0'
 
     def read_stats(self, files):
         """Load stats for specified files from the stats file"""

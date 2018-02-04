@@ -1,5 +1,6 @@
 import os.path
 import argparse
+import distutils.util
 from julius.source.phrasefile import read_phrases
 from julius.voice.say import insert_pauses, dictate
 from julius.source.srs import Srs
@@ -22,17 +23,44 @@ def adhoc_handler(location, pause):
 
 def srs_handler(location, pause):
     srs = Srs(location)
-    for file in srs.get_files_due():
+    files_due = srs.get_files_due()
+
+    while files_due:
+        file = files_due.pop(0)
+
         phrases = read_phrases(os.path.join(location, file))
         phrases = insert_pauses(phrases, pause)
 
         try:
             dictate(phrases)
-            # todo: ask the user for success / failure
+            print('Dictation paused.')
+            if confirm('Please check your results for file {0}: are they correct?'.format(file)):
+                srs.file_processed(file)
+            else:
+                srs.file_failed(file)
+            if files_due and not confirm('Would you like to proceed to the next file?'):
+                break
+
         except KeyboardInterrupt:
+            exit(0)
+        except EOFError:
             exit(0)
         finally:
             srs.save_stats()
+
+    if files_due:
+        print('There remain {0} files to be reviewed today.'.format(len(files_due)))
+    else:
+        print('Nothing else to be reviewed today.')
+
+
+def confirm(prompt):
+    prompt = prompt + ' [y/n]'
+    while True:
+        try:
+            return distutils.util.strtobool(input(prompt))
+        except ValueError:
+            print('Please answer one of: yes, y, no, n.')
 
 
 def main():
