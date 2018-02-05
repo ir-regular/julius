@@ -45,7 +45,14 @@ class Srs:
     @staticmethod
     def next_date_due(prev_date_due, success_count):
         """Return the next date the file is due to be repeated"""
-        return prev_date_due + datetime.timedelta(days=Srs.srs_intervals[success_count])
+        next_date = prev_date_due
+        try:
+            days = Srs.srs_intervals[success_count]
+            next_date += datetime.timedelta(days=days)
+        except IndexError:
+            # past the longest interval assume phrase file is fully memorised, do not show again
+            next_date = next_date.replace(year=datetime.MAXYEAR)
+        return next_date
 
     @staticmethod
     def parse_iso_date(iso_date):
