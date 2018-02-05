@@ -9,13 +9,49 @@ you at a specified rate.
 
 **Julius is currently a Mac-only utility.**
 
-`python julius.py -p 1000 -f sample/phrases.csv`
+`python julius.py adhoc sample/1.csv -p 1000`
+
+Dictates the specified file, pausing for 1 second between each phrase.
+
+`python julius.py srs sample`
+
+Dictates all files from the specified directory that are
+due for practice today.
 
 ### Command syntax
 
-`-f` required: the location of a phrase list file, with a phrase per line
+`python julius.py <mode> <path> [-p <value>]`
 
-`-p` optional: the length of pauses between phrases, in milliseconds (default 1000)
+- `mode`: `adhoc` (single file) or `srs` (multiple files, uses a spaced
+    repetition system to aid memorisation)
+- `path`: a filepath (to the file or directory to dictate)
+- `-p <value>`: optional, the length of pauses between phrases
+    (in milliseconds) - defaults to 1000, or 1 second.
+
+## SRS mode
+
+### How it works
+
+After taking down each phrase file scheduled for learning today,
+Julius will pause and ask if you managed to write all the phrases
+correctly.
+
+If you didn't, the file will get scheduled for practice on the next day.
+
+If you did, the file will get scheduled for practice some time in
+the future. How far in the future exactly depends on how many times
+you've practiced writing down phrases from the same file successfully:
+you will see the same content again in 1, 2, 4, 7, 11, 14, 21, 35, 70,
+or 105 days.
+
+### Why it works
+
+How easy it is for us to recall something depends on how long ago we
+memorised it. When studying according to an SRS (spaced repetition
+system) schedule, you refresh your memory in increasingly larger
+intervals, until the information becomes fully integrated. It is vital
+to check the system every day, so that your backlog doesn't grow too
+large.
 
 ## Rationale
 
