@@ -10,10 +10,8 @@ def adhoc_handler(location, pause):
     if os.path.isfile(location):
         phrases = read_phrases(location)
         phrases = insert_pauses(phrases, pause)
-    elif os.path.isdir(location):
-        raise NotImplementedError('adhoc mode for directories not yet implemented')
     else:
-        raise ValueError('Location must be a valid file or directory')
+        raise ValueError('Location must be a valid file')
 
     try:
         dictate(phrases)
@@ -33,23 +31,17 @@ def srs_handler(location, pause):
 
         try:
             dictate(phrases)
-            print('Dictation paused.')
-            if confirm('Please check your results for file {0}: are they correct?'.format(file)):
-                srs.file_processed(file)
-            else:
-                srs.file_failed(file)
-            if files_due and not confirm('Would you like to proceed to the next file?'):
-                break
-
         except KeyboardInterrupt:
             exit(0)
-        except EOFError:
-            exit(0)
 
-    if files_due:
-        print('There remain {0} files to be reviewed today.'.format(len(files_due)))
-    else:
-        print('Nothing else to be reviewed today.')
+        if confirm('Are your results for file {0} correct?'.format(file)):
+            srs.file_processed(file)
+        else:
+            srs.file_failed(file)
+
+        if files_due:
+            if not confirm('Dictate the next file?'):
+                break
 
 
 def confirm(prompt):
@@ -59,21 +51,28 @@ def confirm(prompt):
             return distutils.util.strtobool(input(prompt))
         except ValueError:
             print('Please answer one of: yes, y, no, n.')
+        except EOFError:
+            print("I'll take it as a no, then.")
+            return False
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('mode', choices=['adhoc', 'srs'], help='adhoc practice or spaced repetition system')
+    parser.add_argument('mode', choices=['adhoc', 'srs'],
+                        help='adhoc practice or spaced repetition system')
     # todo: could use type argument to automatically read in phrases?
-    parser.add_argument('location', help='file or directory of files to use for dictation')
+    parser.add_argument('location',
+                        help='file or directory of files to use for dictation')
     # todo: validate that pause length, if provided, is > 0
-    parser.add_argument('-p', '--pause', help='pause between phrases, in milliseconds', type=int, default=1000)
+    parser.add_argument('-p', '--pause', type=int, default=1000,
+                        help='pause between phrases, in milliseconds')
     args = parser.parse_args()
 
     if args.mode == 'adhoc':
         adhoc_handler(args.location, args.pause)
     else:
         srs_handler(args.location, args.pause)
+
 
 if __name__ == "__main__":
     main()

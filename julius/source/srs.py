@@ -16,17 +16,18 @@ class Srs:
         'success_count',
         # date string, ISO formatted ('yyyy-mm-dd')
         'due_date',
-        # a boolean flag, but stored as 't'/'f' to avoid constant back-and-forth conversion
+        # a boolean flag, but stored as 't'/'f' (only used for sort)
         'new'
     ]
 
-    # SRS programs often adjust intervals based on user performance / ease of recall,
-    # but since I don't want to pause after every phrase, in Julius they will always stay the same.
+    # SRS programs often adjust intervals based on user performance / ease
+    # of recall, but since I don't want to pause after every phrase, in Julius
+    # they will always stay the same.
     srs_intervals = [1, 2, 4, 7, 11, 14, 21, 35, 70, 105]
 
     def __init__(self, directory):
         if not os.path.isdir(directory):
-            raise ValueError('Cannot save SRS stats to path {0} as it is not a directory'.format(directory))
+            raise ValueError('{0} is not a directory'.format(directory))
 
         julius_dir = os.path.join(directory, '.julius')
         os.makedirs(julius_dir, exist_ok=True)
@@ -37,8 +38,12 @@ class Srs:
         if os.path.exists(self.stats_file):
             self.read_stats(existing_files)
 
-        # add default file stat row for any files that exist in the directory but are not covered by stats
-        self.stats.update(dict([[f, self.default_stat(f)] for f in existing_files if f not in self.stats.keys()]))
+        # add default file stat row for any recently added files
+        new_files = [[f, self.default_stat(f)]
+                     for f in existing_files
+                     if f not in self.stats.keys()]
+
+        self.stats.update(dict(new_files))
 
     def __del__(self):
         self.save_stats()
@@ -50,16 +55,21 @@ class Srs:
         >>> Srs.get_files('sample')
         ['1.csv', '2.csv', '3.csv']
         """
-        return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+        return [f
+                for f in os.listdir(directory)
+                if os.path.isfile(os.path.join(directory, f))]
 
     @staticmethod
     def default_stat(file):
         """Return a default file stat row
 
-        >>> Srs.default_stat('any.csv') # doctest: +ELLIPSIS
-        {'file': 'any.csv', 'success_count': '0', 'due_date': '...', 'new': 't'}
+        >>> Srs.default_stat('a.csv') # doctest: +ELLIPSIS
+        {'file': 'a.csv', 'success_count': '0', 'due_date': '...', 'new': 't'}
         """
-        return {'file': file, 'success_count': '0', 'due_date': datetime.date.today().isoformat(), 'new': 't'}
+        return {'file': file,
+                'success_count': '0',
+                'due_date': datetime.date.today().isoformat(),
+                'new': 't'}
 
     @staticmethod
     def next_date_due(prev_date_due, success_count):
@@ -74,12 +84,15 @@ class Srs:
         datetime.date(9999, 2, 5)
         """
         next_date = prev_date_due
+
         try:
             days = Srs.srs_intervals[success_count]
             next_date += datetime.timedelta(days=days)
         except IndexError:
-            # past the longest interval assume phrase file is fully memorised, do not show again
+            # Past the longest interval assume phrase file is fully memorised.
+            # Set year to a silly value and thus never show again.
             next_date = next_date.replace(year=datetime.MAXYEAR)
+
         return next_date
 
     @staticmethod
@@ -99,19 +112,26 @@ class Srs:
         - files that were due before today which the user hasn't practiced yet
         - any new files that haven't been seen by the user at all
 
-        The files are sorted by whether they were previously seen (revisions before new additions),
-        and secondarily, success count in ascending order. As a result, files that need reviewing
-        most urgently will show up first.
+        The files are sorted by whether they were previously seen (revisions
+        before new additions), and secondarily, success count in ascending
+        order. As a result, files that need reviewing most urgently will
+        show up first.
         """
         today = datetime.date.today().isoformat()
         # Filter stats by whether the file is due for practice
-        stats = {f: stat for f, stat in self.stats.items() if stat['due_date'] <= today}
+        stats = {f: stat
+                 for f, stat in self.stats.items()
+                 if stat['due_date'] <= today}
         # Sort files by "previously seen" status and success count:
-        # previously seen and least practiced files come first, never seen before files come last
-        return sorted(stats.keys(), key=lambda f: (stats[f]['new'], stats[f]['success_count']))
+        # previously seen and least practiced files come first,
+        # never seen before files come last
+        return sorted(
+            stats.keys(),
+            key=lambda f: (stats[f]['new'], stats[f]['success_count']))
 
     def file_processed(self, file):
-        """Mark file as successfully processed: increase success count and calculate next due date"""
+        """Mark file as successfully processed: increase success count
+        and calculate next due date"""
         count = int(self.stats[file]['success_count'])
         due_date = self.parse_iso_date(self.stats[file]['due_date'])
 
@@ -120,9 +140,10 @@ class Srs:
         self.stats[file]['new'] = 'f'
 
     def file_failed(self, file):
-        """Mark the file as unsuccessfully processed: reset to the shortest interval (due tomorrow)"""
-        today = datetime.date.today()
-        self.stats[file]['due_date'] = (today + datetime.timedelta(days=1)).isoformat()
+        """Mark the file as unsuccessfully processed: reset to the shortest
+        interval (due tomorrow)"""
+        due_date = datetime.date.today() + datetime.timedelta(days=1)
+        self.stats[file]['due_date'] = due_date.isoformat()
         self.stats[file]['success_count'] = '0'
         self.stats[file]['new'] = 'f'
 
@@ -130,7 +151,9 @@ class Srs:
         """Load stats for specified files from the stats file"""
         with open(self.stats_file, newline='', encoding='utf-8') as fp:
             reader = csv.DictReader(fp)
-            self.stats = {row['file']: row for row in reader if row['file'] in files}
+            self.stats = {row['file']: row
+                          for row in reader
+                          if row['file'] in files}
 
     def save_stats(self):
         """Save stats to the stats file"""
