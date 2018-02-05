@@ -45,8 +45,6 @@ def srs_handler(location, pause):
             exit(0)
         except EOFError:
             exit(0)
-        finally:
-            srs.save_stats()
 
     if files_due:
         print('There remain {0} files to be reviewed today.'.format(len(files_due)))
