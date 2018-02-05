@@ -7,7 +7,18 @@ import datetime
 class Srs:
     stats_file = None
     stats = {}
-    field_names = ['file', 'success_count', 'due_date']
+
+    # Stats file columns
+    field_names = [
+        # filename from the provided SRS directory
+        'file',
+        # string that contains a int, from 0 up to len(Srs.srs_intervals)
+        'success_count',
+        # date string, ISO formatted ('yyyy-mm-dd')
+        'due_date',
+        # a boolean flag, but stored as 't'/'f' to avoid constant back-and-forth conversion
+        'new'
+    ]
 
     # SRS programs often adjust intervals based on user performance / ease of recall,
     # but since I don't want to pause after every phrase, in Julius they will always stay the same.
@@ -40,7 +51,7 @@ class Srs:
     @staticmethod
     def default_stat(file):
         """Return a default file stat row"""
-        return {'file': file, 'success_count': '0', 'due_date': datetime.date.today().isoformat()}
+        return {'file': file, 'success_count': '0', 'due_date': datetime.date.today().isoformat(), 'new': 't'}
 
     @staticmethod
     def next_date_due(prev_date_due, success_count):
@@ -60,11 +71,23 @@ class Srs:
         return datetime.datetime.strptime(iso_date, '%Y-%m-%d').date()
 
     def get_files_due(self):
-        """Return all phrase files which are due to be studied today (including the ones that are late)"""
-        today = datetime.date.today()
-        # todo: order the files
-        # Potential orders to test: by success count, by due date (both asc and desc)
-        return [f for f, stat in self.stats.items() if self.parse_iso_date(stat['due_date']) <= today]
+        """Return all phrase files which are due to be studied today.
+
+        The list includes:
+        - files that are due today
+        - files that were due before today which the user hasn't practiced yet
+        - any new files that haven't been seen by the user at all
+
+        The files are sorted by whether they were previously seen (revisions before new additions),
+        and secondarily, success count in ascending order. As a result, files that need reviewing
+        most urgently will show up first.
+        """
+        today = datetime.date.today().isoformat()
+        # Filter stats by whether the file is due for practice
+        stats = {f: stat for f, stat in self.stats.items() if stat['due_date'] <= today}
+        # Sort files by "previously seen" status and success count:
+        # previously seen and least practiced files come first, never seen before files come last
+        return sorted(stats.keys(), key=lambda f: (stats[f]['new'], stats[f]['success_count']))
 
     def file_processed(self, file):
         """Mark file as successfully processed: increase success count and calculate next due date"""
@@ -73,12 +96,14 @@ class Srs:
 
         self.stats[file]['due_date'] = self.next_date_due(due_date, count)
         self.stats[file]['success_count'] = str(count + 1)
+        self.stats[file]['new'] = 'f'
 
     def file_failed(self, file):
         """Mark the file as unsuccessfully processed: reset to the shortest interval (due tomorrow)"""
         today = datetime.date.today()
         self.stats[file]['due_date'] = (today + datetime.timedelta(days=1)).isoformat()
         self.stats[file]['success_count'] = '0'
+        self.stats[file]['new'] = 'f'
 
     def read_stats(self, files):
         """Load stats for specified files from the stats file"""
