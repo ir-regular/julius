@@ -5,9 +5,12 @@
 Given a list of words, it shuffles them and reads them back to
 you at a specified rate.
 
-## Usage
+## Limitations
 
-**Julius is currently a Mac-only utility.**
+- English language only
+- Runs only on Macs
+
+## Usage
 
 `python julius.py adhoc sample/1.csv -p 1000`
 
@@ -18,12 +21,19 @@ Dictates the specified file, pausing for 1 second between each phrase.
 Dictates all files from the specified directory that are
 due for practice today.
 
+`python julius.py text sample/depression.txt -p 500`
+
+Dictates the file pausing for half a second between phrases
+and 1.5 second between sentences.
+
 ### Command syntax
 
 `python julius.py <mode> <path> [-p <value>]`
 
-- `mode`: `adhoc` (single file) or `srs` (multiple files, uses a spaced
-    repetition system to aid memorisation)
+- `mode`:
+    - `adhoc` - single file with phrases, shuffled
+    - `srs` - multiple files, using a spaced repetition system to aid memorisation
+    - `text` - single file with a text
 - `path`: a filepath (to the file or directory to dictate)
 - `-p <value>`: optional, the length of pauses between phrases
     (in milliseconds) - defaults to 1000, or 1 second.

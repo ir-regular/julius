@@ -1,9 +1,26 @@
 import os.path
 import argparse
 import distutils.util
+import itertools
+from julius.source.textfile import read_sentences
 from julius.source.phrasefile import read_phrases
 from julius.voice.say import insert_pauses, dictate
 from julius.source.srs import Srs
+
+
+def text_handler(location, pause):
+    sentences = read_sentences(location)
+    # Insert an args.pause length pause between phrases in a sentence
+    sentences = [insert_pauses(sentence, pause) for sentence in sentences]
+    # Insert a 3 * args.pause length pause between sentences
+    sentences = insert_pauses(sentences, 3 * pause)
+    # Flatten the list
+    phrases = list(itertools.chain.from_iterable(sentences))
+
+    try:
+        dictate(phrases)
+    except KeyboardInterrupt:
+        exit(0)
 
 
 def adhoc_handler(location, pause):
@@ -58,8 +75,10 @@ def confirm(prompt):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('mode', choices=['adhoc', 'srs'],
-                        help='adhoc practice or spaced repetition system')
+    parser.add_argument(
+        'mode',
+        choices=['adhoc', 'srs', 'text'],
+        help='adhoc practice, spaced repetition system, or text dictation')
     # todo: could use type argument to automatically read in phrases?
     parser.add_argument('location',
                         help='file or directory of files to use for dictation')
@@ -68,10 +87,14 @@ def main():
                         help='pause between phrases, in milliseconds')
     args = parser.parse_args()
 
+    # todo: on second thought, maybe click isn't a stupid idea here
+
     if args.mode == 'adhoc':
         adhoc_handler(args.location, args.pause)
-    else:
+    elif args.mode == 'srs':
         srs_handler(args.location, args.pause)
+    else:
+        text_handler(args.location, args.pause)
 
 
 if __name__ == "__main__":
